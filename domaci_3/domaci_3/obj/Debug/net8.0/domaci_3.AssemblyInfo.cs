@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("domaci_3")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+58de814cbe6ef851d96724aaacde6c518d52d2bb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bb06023562bbe367ecc359bc478d45e23577734a")]
 [assembly: System.Reflection.AssemblyProductAttribute("domaci_3")]
 [assembly: System.Reflection.AssemblyTitleAttribute("domaci_3")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

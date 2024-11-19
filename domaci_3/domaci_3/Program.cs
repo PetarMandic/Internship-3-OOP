@@ -216,7 +216,7 @@ namespace domaci_3
                         break;
                     case 3:
                         Console.Clear();
-                        EditStatusOfProject();
+                        EditStatusOfProject(inventory, listOfProjects, listOfTasks, comparison);
                         break;
                     case 4:
                         Console.Clear();
@@ -287,8 +287,154 @@ namespace domaci_3
                     
                 }
 
-                static void EditStatusOfProject()
+                static void EditStatusOfProject(Dictionary<Project, List<Task>> inventory, List<Project> listOfProjects, List<Task> listOfTasks, Project comparison)
                 {
+                    Console.WriteLine("Trenutni status projekta - " + comparison.ProjectStatus);
+                    Console.WriteLine("");
+                    Console.Write("Promjena status: ");
+                    var newProjectStatus = Console.ReadLine();
+                    var changeStatus = false;
+                    var check = false;
+
+                    while (!check)
+                    {
+                        newProjectStatus = Console.ReadLine();
+                        if (newProjectStatus == "aktivan" || newProjectStatus == "na čekanju" ||
+                            newProjectStatus == "završen")
+                        {
+                            check = true;
+                            if (newProjectStatus == comparison.ProjectStatus)
+                            {
+                                Console.WriteLine("Projekt već sadrži ovakav status.");
+                                Console.WriteLine("Želite li ostaviti status ili ga želite promjeniti. ");
+                                Console.WriteLine("1 - Ostavit status");
+                                Console.WriteLine("2 - Ponovan unos");
+
+                                var action = 0;
+                                var check1 = false;
+                                while (!check1)
+                                {
+                                    check1 = int.TryParse(Console.ReadLine(), out action);
+                                    if (action != 1 && action != 2)
+                                    {
+                                        Console.Write("Uneseni broj nema sebi pridruženu akciju, unesite ponovno: ");
+                                        check1 = false;
+                                    }
+                                    else if (!check1)
+                                    {
+                                        Console.Write("Niste unijeli broj, unesite ponovo: ");
+                                    }
+                                }
+
+                                switch (action)
+                                {
+                                    case 1:
+                                        Console.WriteLine("Status projekta je ostao isti - " +
+                                                          comparison.ProjectStatus);
+                                        Console.Write("Unesite broj 1 za povratak: ");
+
+                                        var back = 0;
+                                        var check2 = false;
+                                        while (!check2)
+                                        {
+                                            check2 = int.TryParse(Console.ReadLine(), out back);
+                                            if (back != 1 && check2 == true)
+                                            {
+                                                Console.Write("Unesen je krivi broj, upišite ponovno: ");
+                                                check = false;
+                                            }
+                                            else if (!check2)
+                                            {
+                                                Console.Write("Niste unijeli broj, upišite ponovno: ");
+                                            }
+                                        }
+
+                                        Console.Clear();
+                                        ProjectManagement(inventory, listOfProjects, listOfTasks);
+                                        break;
+
+                                    case 2:
+                                        changeStatus = true;
+
+                                        Console.Clear();
+                                        EditStatusOfProject(inventory, listOfProjects, listOfTasks, comparison);
+                                        break;
+                                }
+
+                            }
+
+                            else if (newProjectStatus == "aktivan")
+                            {
+                                var dictionary = inventory[comparison];
+                                foreach (var task in dictionary)
+                                {
+                                    task.TaskStatus = newProjectStatus;
+                                }
+                            }
+
+                            else if (newProjectStatus == "na čekanju")
+                            {
+                                var dictionary = inventory[comparison];
+                                foreach (var task in dictionary)
+                                {
+                                    task.TaskStatus = "odgođen";
+                                }
+                            }
+
+                            else if (newProjectStatus == "završen")
+                            {
+                                var dictionary = inventory[comparison];
+                                foreach (var task in dictionary)
+                                {
+                                    task.TaskStatus = newProjectStatus;
+                                }
+                            }
+                        }
+
+                        else
+                        {
+                            Console.Write("Nije unesena mogućnost postavke statusa, unesite ponovno: ");
+                        }
+                    }
+
+                    Console.WriteLine("Status projekta je postavljen na : " + newProjectStatus);
+                    switch (newProjectStatus)
+                    {
+                        case "aktivan":
+                            Console.WriteLine(
+                                "Status svih zadataka u projektu su automatski postavljeni na - aktivan - ");
+                            break;
+                        case "na čekanju":
+                            Console.WriteLine(
+                                "Status svih zadataka u projektu su automatski postavljeni na - odgođen -");
+                            break;
+                        case "završen":
+                            Console.WriteLine(
+                                "Status svih zadataka u projektu su automatski postavljeni na - završen -");
+                            break;
+                    }
+                    
+                    Console.WriteLine("");
+                    Console.Write("Unesite broj 1 za povratak: ");
+
+                    var back2 = 0;
+                    check = false;
+                    while (!check)
+                    {
+                        check = int.TryParse(Console.ReadLine(), out back2);
+                        if (back2 != 1 && check == true)
+                        {
+                            Console.Write("Unesen je krivi broj, upišite ponovno: ");
+                            check = false;
+                        }
+                        else if (!check)
+                        {
+                            Console.Write("Niste unijeli broj, upišite ponovno: ");
+                        }
+                    }
+
+                    Console.Clear();
+                    ProjectManagement(inventory, listOfProjects, listOfTasks);
                     
                 }
 
@@ -307,7 +453,7 @@ namespace domaci_3
                     var taskDescription = Console.ReadLine();
                     while (string.IsNullOrWhiteSpace(taskDescription))
                     {
-                        Console.Write("Unesite ime projekta: ");
+                        Console.Write("Unesite opis projekta: ");
                         taskDescription = Console.ReadLine();
                     }
                     
@@ -372,71 +518,70 @@ namespace domaci_3
 
                         if (check == true)
                         {
-                            triba sve ovo dole ubacit vamo
+                            TimeSpan difference = taskDeadline - DateTime.Now;
+                            DateTime diff = new DateTime(0, 0, 0, 0, 0, 0).Add(difference);
+                            
+                            const int minutesInAnHour = 60;
+                            const int hoursInADay = 24;
+                            const int daysInAMonth = 30;
+                            const int daysInAYear = 365;
+                            
+                            var years = taskDuration / (minutesInAnHour * hoursInADay * daysInAYear);
+                            taskDuration -= years * (minutesInAnHour * hoursInADay * daysInAYear);
+                            
+                            var months = taskDuration / (minutesInAnHour * hoursInADay * daysInAMonth);
+                            taskDuration -= months * (minutesInAnHour * hoursInADay * daysInAMonth);
+                            
+                            var days = taskDuration / (minutesInAnHour * hoursInADay);
+                            taskDuration-= days * (minutesInAnHour * hoursInADay);
+                            
+                            var hours = taskDuration / minutesInAnHour;
+                            taskDuration -= hours * minutesInAnHour;
+                            
+                            int minutes = taskDuration;
+                            
+                            DateTime time = new DateTime(years, months, days, hours, minutes, 0);
+
+                            if (diff < time)
+                            {
+                                Console.WriteLine("Očekivano vrijeme trajanja zadatka je veće od mogućega.");
+                                Console.WriteLine("Želite li potvrditi unos: ");
+                                Console.WriteLine("1 - Da");
+                                Console.WriteLine("2 - Ne");
+
+                                var action = 0;
+                                check = false;
+                                while(!check)
+                                {
+                                    check = int.TryParse(Console.ReadLine(), out action);
+                                    if (action != 1 || action != 2)
+                                    {
+                                        Console.Write("Uneseni broj nema sebi pridruženu akciju, unesite ponovno: ");
+                                        check = false;
+                                    }
+
+                                    else if (!check)
+                                    {
+                                        Console.Write("Niste unijeli broj, unesite ponovno:");
+                                    }
+                                    
+                                }
+
+                                switch (action)
+                                {
+                                    case 1:
+                                        break;
+                                    case 2:
+                                        check = false;
+                                        break;
+                                }
+                            }
                         }
                         else
                         {
                             Console.Write("Nije unesen broj, unesite ponovno: ");
                         }
                         
-                        TimeSpan difference = taskDeadline - DateTime.Now;
-                        DateTime diff = new DateTime(0, 0, 0, 0, 0, 0).Add(difference);
-                        
-                        const int minutesInAnHour = 60;
-                        const int hoursInADay = 24;
-                        const int daysInAMonth = 30;
-                        const int daysInAYear = 365;
-                        
-                        var years = taskDuration / (minutesInAnHour * hoursInADay * daysInAYear);
-                        taskDuration -= years * (minutesInAnHour * hoursInADay * daysInAYear);
-                        
-                        var months = taskDuration / (minutesInAnHour * hoursInADay * daysInAMonth);
-                        taskDuration -= months * (minutesInAnHour * hoursInADay * daysInAMonth);
-                        
-                        var days = taskDuration / (minutesInAnHour * hoursInADay);
-                        taskDuration-= days * (minutesInAnHour * hoursInADay);
-                        
-                        var hours = taskDuration / minutesInAnHour;
-                        taskDuration -= hours * minutesInAnHour;
-                        
-                        int minutes = taskDuration;
-                        
-                        DateTime time = new DateTime(years, months, days, hours, minutes, 0);
-
-                        if (diff < time)
-                        {
-                            Console.WriteLine("Očekivano vrijeme trajanja zadatka je veće od mogućega.");
-                            Console.WriteLine("Želite li potvrditi unos: ");
-                            Console.WriteLine("1 - Da");
-                            Console.WriteLine("2 - Ne");
-
-                            var action = 0;
-                            check = false;
-                            while(!check)
-                            {
-                                check = int.TryParse(Console.ReadLine(), out action);
-                                if (action != 1 || action != 2)
-                                {
-                                    Console.Write("Uneseni broj nema sebi pridruženu akciju, unesite ponovno: ");
-                                    check = false;
-                                }
-
-                                else if (!check)
-                                {
-                                    Console.Write("Niste unijeli broj, unesite ponovno:");
-                                }
-                                
-                            }
-
-                            switch (action)
-                            {
-                                case 1:
-                                    break;
-                                case 2:
-                                    check = false;
-                                    break;
-                            }
-                        }
                     }
                     
                     Task task = new Task(taskName, taskDescription, taskDeadline, taskStatus, taskDuration, comparison.ProjectName);
@@ -448,7 +593,11 @@ namespace domaci_3
 
                 static void DeleteTasks()
                 {
-                    
+                    var deleteTaskName = "";
+                    while (string.IsNullOrEmpty(deleteTaskName))
+                    {
+                        Console.Write("Upišite ime zadatka");
+                    }
                 }
 
                 static void ExpectedTimeForProject()
