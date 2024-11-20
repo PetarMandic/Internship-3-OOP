@@ -64,7 +64,7 @@ namespace domaci_3
                     break;
                 case 7:
                     Console.Clear();
-                    TaskManagement();
+                    TaskManagement(inventory, listOfProjects, listOfTasks);
                     break;
                 case 8:
                     break;
@@ -83,7 +83,7 @@ namespace domaci_3
                 var projectName = Console.ReadLine();
                 while (string.IsNullOrWhiteSpace(projectName))
                 {
-                    Console.Write("Unesite ime projekta: ");
+                    Console.Write("Niste unijeli ime, upišite ponovno: ");
                     projectName = Console.ReadLine();
                 }
                 
@@ -92,7 +92,7 @@ namespace domaci_3
                 var projectDescription = Console.ReadLine();
                 while (string.IsNullOrWhiteSpace(projectDescription))
                 {
-                    Console.Write("Unesite opis projekta: ");
+                    Console.Write("Niste unijeli opis, upišite ponovno: ");
                     projectDescription = Console.ReadLine();
                 }
                 
@@ -224,11 +224,11 @@ namespace domaci_3
                         break;
                     case 5:
                         Console.Clear();
-                        DeleteTasks();
+                        DeleteTasks(inventory, listOfProjects, listOfTasks, comparison);
                         break;
                     case 6:
                         Console.Clear();
-                        ExpectedTimeForProject();
+                        ExpectedTimeForProject(inventory, listOfProjects, listOfTasks, comparison);
                         break;
                     case 7:
                         Console.Clear();
@@ -591,25 +591,166 @@ namespace domaci_3
                     
                 }
 
-                static void DeleteTasks()
+                static void DeleteTasks(Dictionary<Project, List<Task>> inventory, List<Project>listOfProjects, List<Task>listOfTasks, Project comparison)
                 {
                     var deleteTaskName = "";
                     while (string.IsNullOrEmpty(deleteTaskName))
                     {
                         Console.Write("Upišite ime zadatka");
+                        deleteTaskName = Console.ReadLine();
+                    }
+                    
+                    var dictionary = inventory[comparison];
+                    var check = false;
+                    while (!check)
+                    {
+                        foreach (var task in dictionary)
+                        {
+                            if (task.TaskName == deleteTaskName)
+                            {
+                                Console.WriteLine("Želite li zaista izbrisati taj zadatak: ");
+                                Console.WriteLine("-> Da");
+                                Console.WriteLine("-> Ne");
+
+                                var action = Console.ReadLine();
+                                while (string.IsNullOrEmpty(action))
+                                {
+                                    Console.Write("Unos ne odgovara niti jednoj mogućnosti, unesite ponovno: ");
+                                    action = Console.ReadLine();
+                                }
+
+                                switch (action)
+                                {
+                                    case "Da":
+                                        dictionary.Remove(task);
+                                        inventory[comparison] = dictionary;
+                                        Console.WriteLine("Zadatak je uspiješno izbrisan.");
+                                        check = true;
+                                        break;
+                                    case "Ne":
+                                        Console.WriteLine("Zadatak nije izbrisan.");
+                                        check = true;
+                                        break;
+                                }
+
+                                break;
+                            }
+                        }
+
+                        if (!check)
+                        {
+                            Console.Write("Ime zadatka nije pronađeno, unesite ime ponovno: ");
+                            deleteTaskName = Console.ReadLine();
+                        }
                     }
                 }
 
-                static void ExpectedTimeForProject()
+                static void ExpectedTimeForProject(Dictionary<Project, List<Task>> inventory, List<Project>listOfProjects, List<Task>listOfTasks, Project comparison)
                 {
+                    var dictionary = inventory[comparison];
+                    var timeForAllActiveTasks = 0;
                     
+                    foreach (var task in dictionary)
+                    {
+                        if (task.TaskStatus == "akitvan")
+                        {
+                            timeForAllActiveTasks += task.TaskDuration;
+                        }
+                        
+                    }
+                    
+                    const int minutesInAnHour = 60;
+                    const int hoursInADay = 24;
+                    const int daysInAMonth = 30;
+                    const int daysInAYear = 365;
+                            
+                    var years = timeForAllActiveTasks / (minutesInAnHour * hoursInADay * daysInAYear);
+                    timeForAllActiveTasks -= years * (minutesInAnHour * hoursInADay * daysInAYear);
+                            
+                    var months = timeForAllActiveTasks / (minutesInAnHour * hoursInADay * daysInAMonth);
+                    timeForAllActiveTasks -= months * (minutesInAnHour * hoursInADay * daysInAMonth);
+                            
+                    var days = timeForAllActiveTasks / (minutesInAnHour * hoursInADay);
+                    timeForAllActiveTasks-= days * (minutesInAnHour * hoursInADay);
+                            
+                    var hours = timeForAllActiveTasks / minutesInAnHour;
+                    timeForAllActiveTasks -= hours * minutesInAnHour;
+                            
+                    var minutes = timeForAllActiveTasks;
+                    
+                    Console.WriteLine("Očekivano vrijeme za sve aktivne zadatke u projektu:");
+                    Console.WriteLine("");
+                    Console.WriteLine(years + " godina");
+                    Console.WriteLine(months + " mjeseca");
+                    Console.WriteLine(days + " dan");
+                    Console.WriteLine(hours + " sat");
+                    Console.WriteLine(minutes + " minuta");
+
                 }
                 
                 
             }
 
-            static void TaskManagement()
+            static void TaskManagement(Dictionary<Project, List<Task>> inventory, List<Project>listOfProjects, List<Task>listOfTasks)
             {
+                
+                Console.Write("Unesite ime projekta u kojem se nalazi željeni zadatak: ");
+                var NameOfProject = Console.ReadLine();
+                var notFound = false;
+                var i = 0;
+                Project comparisonProject = new Project("", "", DateTime.Now, null, "");
+                Task comparisonTask = new Task("", "", DateTime.Now, "", 0, "");
+
+                while(i < listOfProjects.Count)
+                {
+                    notFound = false;
+                    var project = listOfProjects[i];
+                    if (project.ProjectName == NameOfProject)
+                    {
+                        comparisonProject = new Project(project.ProjectName, project.ProjectDescription, project.ProjectDateStart, project.ProjectDateEnd, project.ProjectStatus);
+                        
+                        Console.WriteLine("Unesite ime zadatka: ");
+                        var NameOfTask = Console.ReadLine();
+                        var dictionary = inventory[comparisonProject];
+                        var check = false;
+                        while (!check)
+                        {
+                            foreach (var task in dictionary)
+                            {
+                                if (task.TaskName == NameOfTask)
+                                {
+                                    comparisonTask = new Task(task.TaskName, task.TaskDescription, task.TaskDeadline,
+                                        task.TaskStatus, task.TaskDuration, task.NameOfProject);
+                                    check = true;
+                                    break;
+                                }
+                            
+                            }
+
+                            if (!check)
+                            {
+                                Console.Write("Ime zadatka ne postoji, unesite ponovno: ");
+                                NameOfTask = Console.ReadLine();
+                            }
+                        }
+                        
+                        break;
+                    }
+                    
+                    if(i+1 == listOfProjects.Count)
+                    {
+                        Console.Write("Ime projekta ne postoji, unesite ponovno: ");
+                        NameOfProject = Console.ReadLine();
+                        notFound = true;
+                        i = 0;
+                    }
+
+                    if (!notFound)
+                    {
+                        i += 1;
+                    }
+                }
+                
                 Console.WriteLine("PODIZBORNIK");
                 Console.WriteLine("    1. Prikaz detalja odabrnog zadatka");
                 Console.WriteLine("    2. Uređivanje statusa zadatka");
@@ -617,15 +758,15 @@ namespace domaci_3
                 
                 Console.Write("    Unesite željenu akciju: ");
                 var action = 0;
-                var check = false;
-                while (!check)
+                var check1 = false;
+                while (!check1)
                 {
-                    check = int.TryParse(Console.ReadLine(), out action);
+                    check1 = int.TryParse(Console.ReadLine(), out action);
                     if (action < 1 || action > 3)
                     {
                         Console.WriteLine("Upisani broj ne sadržava niti jednu akciju, upišite broj ponovno: ");
                     }
-                    else if (!check)
+                    else if (!check1)
                     {
                         Console.WriteLine("Potrebno je upisati broj, odaberite željenu akciju ponovno: ");
                     }
@@ -635,11 +776,11 @@ namespace domaci_3
                 {
                     case 1:
                         Console.Clear();
-                        TaskDetails();
+                        TaskDetails(inventory, listOfProjects, listOfTasks, comparisonProject, comparisonTask);
                         break;
                     case 2:
                         Console.Clear();
-                        EditStatusOfTask();
+                        EditStatusOfTask(inventory, listOfProjects, listOfTasks, comparisonProject, comparisonTask);
                         break;
                     case 3:
                         Console.Clear();
@@ -649,14 +790,104 @@ namespace domaci_3
                     
                 }
 
-                static void TaskDetails()
+                static void TaskDetails(Dictionary<Project, List<Task>> inventory, List<Project>listOfProjects, List<Task>listOfTasks, Project comparisonProject,Task comparisonTask)
                 {
-                    
+                    Console.WriteLine("Detalji zadatka " + comparisonTask.TaskName +" u projektu " + comparisonProject.ProjectName);
+                    Console.Clear();
+                    Console.WriteLine("Ime zadatka: " + comparisonTask.TaskName);
+                    Console.WriteLine("Opis zadatka: " + comparisonTask.TaskDescription);
+                    Console.WriteLine("Rok za izvršenje zadatka: " + comparisonTask.TaskDeadline);
+                    Console.WriteLine("Status zadatka: " + comparisonTask.TaskStatus);
+                    Console.WriteLine("Očekivano vrijeme za zadatak(u minutama): " + comparisonTask.TaskDuration);
+                    Console.WriteLine("Ime projekta: " + comparisonTask.NameOfProject);
                 }
 
-                static void EditStatusOfTask()
+                static void EditStatusOfTask(Dictionary<Project, List<Task>> inventory, List<Project>listOfProjects, List<Task>listOfTasks, Project comparisonProject,Task comparisonTask)
                 {
+                    var newStatus = "";
+                    Console.Write("Unesite status koji želite postaviti na zadatak: ");
+                    newStatus = Console.ReadLine();
+                    while (newStatus != "aktivan" && newStatus != "završen" && newStatus != "odgođen")
+                    {
+                        Console.Write("Niste unijeli moguću opciju za status zadatka unesite ponovno: ");
+                        newStatus = Console.ReadLine();
+                    }
+
+                    if (newStatus == comparisonTask.TaskStatus)
+                    {
+                        Console.WriteLine("Status zadatka je već postavljen kao "+ newStatus);
+                        Console.WriteLine("Želite li ostaviti status ili ga promjeniti");
+                        Console.WriteLine("1 - Promjeni");
+                        Console.WriteLine("2 - Ostavi kako je postavljeno");
+                        
+                        Console.WriteLine("");
+                        Console.Write("Unos: ");
+                        var input = 0;
+                        var check = false;
+                        while (!check)
+                        {
+                            check = int.TryParse(Console.ReadLine(), out input);
+                            if (input != 1 && input != 2)
+                            {
+                                Console.Write("Upisani broj ne sadržava nikakvu akciju, upišite ponovno: ");
+                                check = false;
+                            }
+                            else if (!check)
+                            {
+                                Console.Write("Niste unijeli broj, upišite ponovno");
+                            }
+                        }   
+
+                        switch (input)
+                        {
+                            case 1:
+                                Console.Clear();
+                                EditStatusOfTask(inventory, listOfProjects, listOfTasks, comparisonProject, comparisonTask);
+                                break;
+                            case 2:
+                                break;
+                        }
+                    }
                     
+                    switch (newStatus)
+                    {
+                        case "aktivan":
+                            
+                            listOfTasks.Remove(comparisonTask);
+                            
+                            comparisonTask = new Task(comparisonTask.TaskName, comparisonTask.TaskDescription,
+                                comparisonTask.TaskDeadline,
+                                "aktivan", comparisonTask.TaskDuration, comparisonTask.NameOfProject);
+                            
+                            listOfTasks.Add(comparisonTask);
+                            inventory[comparisonProject] = listOfTasks;
+                            
+                            break;
+                        case "završen":
+                            
+                            listOfTasks.Remove(comparisonTask);
+                            
+                            comparisonTask = new Task(comparisonTask.TaskName, comparisonTask.TaskDescription,
+                                comparisonTask.TaskDeadline,
+                                "završen", comparisonTask.TaskDuration, comparisonTask.NameOfProject);
+                            
+                            listOfTasks.Add(comparisonTask);
+                            inventory[comparisonProject] = listOfTasks;
+                            
+                            break;
+                        case "odgođen":
+                            
+                            listOfTasks.Remove(comparisonTask);
+                            
+                            comparisonTask = new Task(comparisonTask.TaskName, comparisonTask.TaskDescription,
+                                comparisonTask.TaskDeadline,
+                                "odgođen", comparisonTask.TaskDuration, comparisonTask.NameOfProject);
+                            
+                            listOfTasks.Add(comparisonTask);
+                            inventory[comparisonProject] = listOfTasks;
+                            
+                            break;
+                    }
                 }
             }
             
