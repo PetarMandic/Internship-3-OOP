@@ -4,71 +4,75 @@ namespace domaci_3
 {
     class Program
     {
-        static Dictionary<Project, List<Task>> inventory = new Dictionary<Project, List<Task>>();
-        static List<Project> listOfProjects = new List<Project>();
-        static List<Task> listOfTasks = new List<Task>();
         static void Main()
         {
-            
-            Console.WriteLine("GLAVNI IZBORNIK");
-            Console.WriteLine("    1. Ispis svih projekata s pripadajućim zadacima");
-            Console.WriteLine("    2. Dodavanje novog projekta");
-            Console.WriteLine("    3. Brisanje projekta");
-            Console.WriteLine("    4. Prikaz svih zadataka s rokom u sljedećih 7 dana");
-            Console.WriteLine("    5. Prikaz projekata filtriranih po statusu");
-            Console.WriteLine("    6. Upravljanje pojedinim projektom");
-            Console.WriteLine("    7. Upravljanje pojedinim zadatkom");
-            Console.WriteLine("    8. Izlaz iz aplikacije");
-            
-            Console.Write("    Unesite željenu akciju: ");
-            var action = 0;
-            var check = false;
-            while (!check)
-            {
-                check = int.TryParse(Console.ReadLine(), out action);
-                if (action < 1 || action > 8)
-                {
-                    Console.Write("Upisani broj ne sadržava niti jednu akciju, upišite broj ponovno: ");
-                }
-                else if (!check)
-                {
-                    Console.Write("Potrebno je upisati broj, odaberite željenu akciju ponovno: ");
-                }
-            }
 
-            switch (action)
+            Dictionary<Project, List<Task>> inventory = new Dictionary<Project, List<Task>>();
+            List<Project> listOfProjects = new List<Project>();
+            List<Task> listOfTasks = new List<Task>();
+            MainMenu(inventory, listOfProjects, listOfTasks);
+            static void MainMenu(Dictionary<Project, List<Task>> inventory, List<Project> listOfProjects, List<Task> listOfTasks)
             {
-                case 1:
-                    Console.Clear();
-                    PrintProject(inventory, listOfProjects, listOfTasks);
-                    break;
-                case 2:
-                    Console.Clear();
-                    InputProject(inventory, listOfProjects, listOfTasks);
-                    break;
-                case 3:
-                    Console.Clear();
-                    DeleteProject(inventory, listOfProjects, listOfTasks);
-                    break;
-                case 4:
-                    Console.Clear();
-                    DisplayProjectDeadline(inventory, listOfProjects, listOfTasks);
-                    break;
-                case 5:
-                    Console.Clear();
-                    DisplayProjectStatus(inventory, listOfProjects, listOfTasks);
-                    break;
-                case 6:
-                    Console.Clear();
-                    ProjectManagement(inventory, listOfProjects, listOfTasks);
-                    break;
-                case 7:
-                    Console.Clear();
-                    TaskManagement(inventory, listOfProjects, listOfTasks);
-                    break;
-                case 8:
-                    break;
-                
+                Console.WriteLine("GLAVNI IZBORNIK");
+                Console.WriteLine("    1. Ispis svih projekata s pripadajućim zadacima");
+                Console.WriteLine("    2. Dodavanje novog projekta");
+                Console.WriteLine("    3. Brisanje projekta");
+                Console.WriteLine("    4. Prikaz svih zadataka s rokom u sljedećih 7 dana");
+                Console.WriteLine("    5. Prikaz projekata filtriranih po statusu");
+                Console.WriteLine("    6. Upravljanje pojedinim projektom");
+                Console.WriteLine("    7. Upravljanje pojedinim zadatkom");
+                Console.WriteLine("    8. Izlaz iz aplikacije");
+
+                Console.Write("    Unesite željenu akciju: ");
+                var action = 0;
+                var check = false;
+                while (!check)
+                {
+                    check = int.TryParse(Console.ReadLine(), out action);
+                    if (action < 1 || action > 8)
+                    {
+                        Console.Write("Upisani broj ne sadržava niti jednu akciju, upišite broj ponovno: ");
+                    }
+                    else if (!check)
+                    {
+                        Console.Write("Potrebno je upisati broj, odaberite željenu akciju ponovno: ");
+                    }
+                }
+
+                switch (action)
+                {
+                    case 1:
+                        Console.Clear();
+                        PrintProject(inventory, listOfProjects, listOfTasks);
+                        break;
+                    case 2:
+                        Console.Clear();
+                        InputProject(inventory, listOfProjects, listOfTasks);
+                        break;
+                    case 3:
+                        Console.Clear();
+                        DeleteProject(inventory, listOfProjects, listOfTasks);
+                        break;
+                    case 4:
+                        Console.Clear();
+                        DisplayProjectDeadline(inventory, listOfProjects, listOfTasks);
+                        break;
+                    case 5:
+                        Console.Clear();
+                        DisplayProjectStatus(inventory, listOfProjects, listOfTasks);
+                        break;
+                    case 6:
+                        Console.Clear();
+                        ProjectManagement(inventory, listOfProjects, listOfTasks);
+                        break;
+                    case 7:
+                        Console.Clear();
+                        TaskManagement(inventory, listOfProjects, listOfTasks);
+                        break;
+                    case 8:
+                        return;
+
+                }
             }
 
             static void PrintProject(Dictionary<Project, List<Task>> inventory, List<Project>listOfProjects, List<Task>listOfTasks)
@@ -76,7 +80,7 @@ namespace domaci_3
                 foreach (var project in listOfProjects)
                 {
                     Console.WriteLine("Projekt: " + project.ProjectName);
-                    int i = 0;
+                    int i = 1;
                     foreach (var task in inventory[project])
                     {
                         Console.WriteLine("-> "+i+". Zadatak: "+ task.TaskName);
@@ -85,24 +89,9 @@ namespace domaci_3
                     Console.WriteLine("");
                 }
                 
-                Console.Write("Unesite broj 1 za povratak: ");
-                var back = 0;
-                var check = false;
-                while (!check)
-                {
-                    check = int.TryParse(Console.ReadLine(), out back);
-                    if (back != 1 && check == true)
-                    {
-                        Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                        check = false;
-                    }
-                    else if (!check)
-                    {
-                        Console.Write("Niste unijeli broj, upišite ponovno: ");
-                    }
-                }
+                back();
                 Console.Clear();
-                Main();
+                MainMenu(inventory, listOfProjects, listOfTasks);
             }
 
             static void InputProject(Dictionary<Project, List<Task>> inventory, List<Project>listOfProjects, List<Task>listOfTasks)
@@ -114,8 +103,15 @@ namespace domaci_3
                 {
                     Console.Write("Niste unijeli ime, upišite ponovno: ");
                     projectName = Console.ReadLine();
+                    foreach (var projectClone in listOfProjects)
+                    {
+                        if (projectName == projectClone.ProjectName)
+                        {
+                            Console.Write("Već postoji projekt s ovim imenom, unesite ponovno: ");
+                            break;
+                        }
+                    }
                 }
-                
                 
                 Console.Write("Unesite opis projekta: ");
                 var projectDescription = Console.ReadLine();
@@ -125,7 +121,7 @@ namespace domaci_3
                     projectDescription = Console.ReadLine();
                 }
                 
-                Console.Write("Unesite datum početka projekta: ");
+                Console.Write("Unesite datum početka projekta(MM.DD.YYYY): ");
                 var projectDateStart = DateTime.Now; 
                 var check = false;
                 while (!check)
@@ -154,7 +150,7 @@ namespace domaci_3
                 listOfProjects.Add(project);
                 inventory.Add(project, listOfTasks);
                 Console.Clear();
-                Main();
+                MainMenu(inventory, listOfProjects, listOfTasks);
 
             }
 
@@ -210,25 +206,9 @@ namespace domaci_3
                     }
                 }
                 
-                Console.Write("Unesite broj 1 za povratak: ");
-                var back = 0;
-                var check = false;
-                while (!check)
-                {
-                    check = int.TryParse(Console.ReadLine(), out back);
-                    if (back != 1 && check == true)
-                    {
-                        Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                        check = false;
-                    }
-                    else if (!check)
-                    {
-                        Console.Write("Niste unijeli broj, upišite ponovno: ");
-                    }
-                }
-                
+                back();
                 Console.Clear();
-                Main();
+                MainMenu(inventory, listOfProjects, listOfTasks);
                 
             }
 
@@ -246,25 +226,10 @@ namespace domaci_3
                     }
                 }
                 
-                Console.Write("Unesite broj 1 za povratak: ");
-                var back = 0;
-                var check = false;
-                while (!check)
-                {
-                    check = int.TryParse(Console.ReadLine(), out back);
-                    if (back != 1 && check == true)
-                    {
-                        Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                        check = false;
-                    }
-                    else if (!check)
-                    {
-                        Console.Write("Niste unijeli broj, upišite ponovno: ");
-                    }
-                }
                 
+                back();
                 Console.Clear();
-                Main();
+                MainMenu(inventory, listOfProjects, listOfTasks);
             }
 
             static void DisplayProjectStatus(Dictionary<Project, List<Task>> inventory, List<Project> listOfProjects,
@@ -319,26 +284,10 @@ namespace domaci_3
                 }
                 
                 Console.WriteLine("");
-                
-                Console.Write("Unesite broj 1 za povratak: ");
-                var back = 0;
-                check = false;
-                while (!check)
-                {
-                    check = int.TryParse(Console.ReadLine(), out back);
-                    if (back != 1 && check == true)
-                    {
-                        Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                        check = false;
-                    }
-                    else if (!check)
-                    {
-                        Console.Write("Niste unijeli broj, upišite ponovno: ");
-                    }
-                }
-                
+               
+                back();                
                 Console.Clear();
-                Main();
+                MainMenu(inventory, listOfProjects, listOfTasks);
                 
             }
 
@@ -418,6 +367,7 @@ namespace domaci_3
                         break;
                     case 4:
                         Console.Clear();
+                        listOfTasks = [];
                         TaskInput(inventory, listOfProjects, listOfTasks, comparison);
                         break;
                     case 5:
@@ -430,7 +380,7 @@ namespace domaci_3
                         break;
                     case 7:
                         Console.Clear();
-                        Main();
+                        MainMenu(inventory, listOfProjects, listOfTasks);
                         break;
                 }
 
@@ -444,24 +394,7 @@ namespace domaci_3
                     }
                     
                     Console.WriteLine("");
-                    Console.Write("Unesite broj 1 za povratak: ");
-
-                    var back = 0;
-                    var check = false;
-                    while (!check)
-                    {
-                        check = int.TryParse(Console.ReadLine(), out back);
-                        if (back != 1 && check == true)
-                        {
-                            Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                            check = false;
-                        }
-                        else if (!check)
-                        {
-                            Console.Write("Niste unijeli broj, upišite ponovno: ");
-                        }
-                    }
-                    
+                    back();
                     Console.Clear();
                     ProjectManagement(inventory, listOfProjects, listOfTasks);
                 }
@@ -484,24 +417,8 @@ namespace domaci_3
                     Console.WriteLine("Status projekta: " + comparison.ProjectStatus);
                     
                     Console.WriteLine("");
-                    Console.Write("Unesite broj 1 za povratak: ");
-
-                    var back = 0;
-                    var check = false;
-                    while (!check)
-                    {
-                        check = int.TryParse(Console.ReadLine(), out back);
-                        if (back != 1 && check == true)
-                        {
-                            Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                            check = false;
-                        }
-                        else if (!check)
-                        {
-                            Console.Write("Niste unijeli broj, upišite ponovno: ");
-                        }
-                    }
                     
+                    back();
                     Console.Clear();
                     ProjectManagement(inventory, listOfProjects, listOfTasks);
                     
@@ -509,6 +426,14 @@ namespace domaci_3
 
                 static void EditStatusOfProject(Dictionary<Project, List<Task>> inventory, List<Project> listOfProjects, List<Task> listOfTasks, Project comparison)
                 {
+                    if (comparison.ProjectStatus == "završen")
+                    {
+                        Console.WriteLine("Projekt se ne može uređivati jer je postavljen kao završen.");
+                        back();
+                        Console.Clear();
+                        ProjectManagement(inventory, listOfProjects, listOfTasks);
+                    }
+                    
                     Console.WriteLine("Trenutni status projekta - " + comparison.ProjectStatus);
                     Console.WriteLine("");
                     Console.Write("Promjena status: ");
@@ -551,24 +476,8 @@ namespace domaci_3
                                     case 1:
                                         Console.WriteLine("Status projekta je ostao isti - " +
                                                           comparison.ProjectStatus);
-                                        Console.Write("Unesite broj 1 za povratak: ");
-
-                                        var back = 0;
-                                        var check2 = false;
-                                        while (!check2)
-                                        {
-                                            check2 = int.TryParse(Console.ReadLine(), out back);
-                                            if (back != 1 && check2 == true)
-                                            {
-                                                Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                                                check = false;
-                                            }
-                                            else if (!check2)
-                                            {
-                                                Console.Write("Niste unijeli broj, upišite ponovno: ");
-                                            }
-                                        }
-
+                                        
+                                        back();
                                         Console.Clear();
                                         ProjectManagement(inventory, listOfProjects, listOfTasks);
                                         break;
@@ -637,22 +546,7 @@ namespace domaci_3
                     Console.WriteLine("");
                     Console.Write("Unesite broj 1 za povratak: ");
 
-                    var back2 = 0;
-                    check = false;
-                    while (!check)
-                    {
-                        check = int.TryParse(Console.ReadLine(), out back2);
-                        if (back2 != 1 && check == true)
-                        {
-                            Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                            check = false;
-                        }
-                        else if (!check)
-                        {
-                            Console.Write("Niste unijeli broj, upišite ponovno: ");
-                        }
-                    }
-
+                    back();
                     Console.Clear();
                     ProjectManagement(inventory, listOfProjects, listOfTasks);
                     
@@ -660,6 +554,13 @@ namespace domaci_3
 
                 static void TaskInput(Dictionary<Project, List<Task>> inventory, List<Project>listOfProjects, List<Task>listOfTasks, Project comparison)
                 {
+                    if (comparison.ProjectStatus == "završen")
+                    {
+                        Console.WriteLine("Projekt je postavljen kao završen, nije moguće dodavati nove zadatke.");
+                        back();
+                        Console.Clear();
+                        ProjectManagement(inventory, listOfProjects, listOfTasks);
+                    }
                     
                     Console.Write("Unesite ime zadatka: ");
                     var taskName = Console.ReadLine();
@@ -708,6 +609,7 @@ namespace domaci_3
                             {
                                 case 1:
                                     taskStatus = "završen";
+                                    AllTasksFinished(inventory, comparison);
                                     break;
                                 case 2:
                                     check = false;
@@ -791,24 +693,8 @@ namespace domaci_3
                     inventory[comparison] = listOfTasks;
                     
                     Console.WriteLine("");
-                    Console.Write("Unesite broj 1 za povratak: ");
-
-                    var back = 0;
-                    check = false;
-                    while (!check)
-                    {
-                        check = int.TryParse(Console.ReadLine(), out back);
-                        if (back != 1 && check == true)
-                        {
-                            Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                            check = false;
-                        }
-                        else if (!check)
-                        {
-                            Console.Write("Niste unijeli broj, upišite ponovno: ");
-                        }
-                    }
                     
+                    back();
                     Console.Clear();
                     ProjectManagement(inventory, listOfProjects, listOfTasks);
                     
@@ -868,23 +754,10 @@ namespace domaci_3
                     }
                     
                     Console.WriteLine("");
-                    Console.Write("Unesite broj 1 za povratak: ");
-
-                    var back = 0;
-                    check = false;
-                    while (!check)
-                    {
-                        check = int.TryParse(Console.ReadLine(), out back);
-                        if (back != 1 && check == true)
-                        {
-                            Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                            check = false;
-                        }
-                        else if (!check)
-                        {
-                            Console.Write("Niste unijeli broj, upišite ponovno: ");
-                        }
-                    }
+                    
+                    AllTasksFinished(inventory, comparison);
+                    back();
+                    ProjectManagement(inventory, listOfProjects, listOfTasks);
                     
                 }
 
@@ -932,24 +805,8 @@ namespace domaci_3
                 }
                 
                 Console.WriteLine("");
-                Console.Write("Unesite broj 1 za povratak: ");
-
-                var back = 0;
-                check = false;
-                while (!check)
-                {
-                    check = int.TryParse(Console.ReadLine(), out back);
-                    if (back != 1 && check == true)
-                    {
-                        Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                        check = false;
-                    }
-                    else if (!check)
-                    {
-                        Console.Write("Niste unijeli broj, upišite ponovno: ");
-                    }
-                }
                 
+                back();
                 Console.Clear();
                 ProjectManagement(inventory, listOfProjects, listOfTasks);
                 
@@ -1047,7 +904,7 @@ namespace domaci_3
                         break;
                     case 3:
                         Console.Clear();
-                        Main();
+                        MainMenu(inventory, listOfProjects, listOfTasks);
                         break;
                     
                     
@@ -1067,22 +924,7 @@ namespace domaci_3
                     Console.WriteLine("");
                     Console.Write("Unesite broj 1 za povratak: ");
 
-                    var back = 0;
-                    var check = false;
-                    while (!check)
-                    {
-                        check = int.TryParse(Console.ReadLine(), out back);
-                        if (back != 1 && check == true)
-                        {
-                            Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                            check = false;
-                        }
-                        else if (!check)
-                        {
-                            Console.Write("Niste unijeli broj, upišite ponovno: ");
-                        }
-                    }
-                    
+                    back();
                     Console.Clear();
                     TaskManagement(inventory, listOfProjects, listOfTasks);
                 }
@@ -1158,7 +1000,7 @@ namespace domaci_3
                             
                             listOfTasks.Add(comparisonTask);
                             inventory[comparisonProject] = listOfTasks;
-                            
+                            AllTasksFinished(inventory, comparisonProject);
                             break;
                         case "odgođen":
                             
@@ -1175,29 +1017,51 @@ namespace domaci_3
                     }
                     
                     Console.WriteLine("");
-                    Console.Write("Unesite broj 1 za povratak: ");
-
-                    var back = 0;
-                    var check1 = false;
-                    while (!check1)
-                    {
-                        check1 = int.TryParse(Console.ReadLine(), out back);
-                        if (back != 1 && check1 == true)
-                        {
-                            Console.Write("Unesen je krivi broj, upišite ponovno: ");
-                            check1 = false;
-                        }
-                        else if (!check1)
-                        {
-                            Console.Write("Niste unijeli broj, upišite ponovno: ");
-                        }
-                    }
                     
+                    back();
                     Console.Clear();
                     TaskManagement(inventory, listOfProjects, listOfTasks);
                 }
             }
-            
+
+            static void back()
+            {
+                Console.Write("Unesite broj 1 za povratak: ");
+                var back = 0;
+                var check = false;
+                while (!check)
+                {
+                    check = int.TryParse(Console.ReadLine(), out back);
+                    if (back != 1 && check == true)
+                    {
+                        Console.Write("Unesen je krivi broj, upišite ponovno: ");
+                        check = false;
+                    }
+                    else if (!check)
+                    {
+                        Console.Write("Niste unijeli broj, upišite ponovno: ");
+                    }
+                }
+            }
+
+            static void AllTasksFinished(Dictionary<Project, List<Task>> inventory, Project comparison)
+            {
+                var list = inventory[comparison];
+                var numberOfTasksStatus = 0;
+                
+                foreach (var task in list)
+                {
+                    if (task.TaskStatus == "završen")
+                    {
+                        numberOfTasksStatus++;
+                    }
+                }
+
+                if (numberOfTasksStatus == list.Count)
+                {
+                    Console.WriteLine("Svi zadaci u prjektu su postavljeni na -> 'završen', status projekta postaje -> 'završen'");
+                }
+            }
         }
     }
 }
