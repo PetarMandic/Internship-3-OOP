@@ -99,17 +99,43 @@ namespace domaci_3
                 
                 Console.Write("Unesite ime projekta: ");
                 var projectName = Console.ReadLine();
-                while (string.IsNullOrWhiteSpace(projectName))
+                var error = false;
+                var count = 0;
+                if (listOfProjects.Count == 0)
                 {
-                    Console.Write("Niste unijeli ime, upišite ponovno: ");
-                    projectName = Console.ReadLine();
-                    foreach (var projectClone in listOfProjects)
+                    count = 1;
+                }
+                else
+                {
+                    count = listOfProjects.Count;
+                }
+                
+                for (int i = 0; i < count; i++)
+                {
+                    if (listOfProjects.Count == 0)
                     {
-                        if (projectName == projectClone.ProjectName)
-                        {
-                            Console.Write("Već postoji projekt s ovim imenom, unesite ponovno: ");
-                            break;
-                        }
+                        break;
+                    }
+                    
+                    var projectClone = listOfProjects[i];
+                    
+                    if (error)
+                    {
+                        projectName = Console.ReadLine();
+                    }
+                    
+                    if (string.IsNullOrWhiteSpace(projectName))
+                    {
+                        Console.Write("Niste unijeli ime, upišite ponovno: ");
+                        i = -1;
+                        error = true;
+                    }
+                    
+                    else if(projectClone.ProjectName == projectName)
+                    {
+                        Console.Write("Već postoji projekt s ovim imenom, unesite ponovno: ");
+                        i = -1;
+                        error = true;
                     }
                 }
                 
