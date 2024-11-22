@@ -319,6 +319,13 @@ namespace domaci_3
 
             static void ProjectManagement(Dictionary<Project, List<Task>> inventory, List<Project>listOfProjects, List<Task>listOfTasks)
             {
+                if (listOfProjects.Count == 0)
+                {
+                    Console.WriteLine("Nepostoji još niti jedan projekt");
+                    back();
+                    Console.Clear();
+                    MainMenu(inventory, listOfProjects, listOfTasks);
+                }
                 
                 Console.Write("Unesite ime projekta: ");
                 var NameOfProject = Console.ReadLine();
@@ -339,8 +346,13 @@ namespace domaci_3
                     
                     if(i+1 == listOfProjects.Count)
                     {
-                        Console.Write("Ime projekta ne postoji, unesite ponovno: ");
+                        Console.Write("Ime projekta ne postoji, unesite ponovno ili unesite broj 1 za povratak: ");
                         NameOfProject = Console.ReadLine();
+                        if (NameOfProject == "1")
+                        {
+                            Console.Clear();
+                            MainMenu(inventory, listOfProjects, listOfTasks);
+                        }
                         notFound = true;
                         i = 0;
                     }
@@ -590,10 +602,45 @@ namespace domaci_3
                     
                     Console.Write("Unesite ime zadatka: ");
                     var taskName = Console.ReadLine();
-                    while (string.IsNullOrWhiteSpace(taskName))
+                    var error = false;
+                    var count = 0;
+                    var list = inventory[comparison];
+                    if (list.Count == 0)
                     {
-                        Console.Write("Unesite ime projekta: ");
-                        taskName = Console.ReadLine();
+                        count = 1;
+                    }
+                    else
+                    {
+                        count = list.Count;
+                    }
+                
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (list.Count == 0)
+                        {
+                            break;
+                        }
+                        
+                        var taskClone = list[i];
+                    
+                        if (error)
+                        {
+                            taskName = Console.ReadLine();
+                        }
+                    
+                        if (string.IsNullOrWhiteSpace(taskName))
+                        {
+                            Console.Write("Niste unijeli ime, upišite ponovno: ");
+                            i = -1;
+                            error = true;
+                        }
+                    
+                        else if(taskClone.TaskName == taskName)
+                        {
+                            Console.Write("Već postoji projekt s ovim imenom, unesite ponovno: ");
+                            i = -1;
+                            error = true;
+                        }
                     }
                     
                     Console.Write("Unesite opis zadatka: ");
@@ -840,6 +887,14 @@ namespace domaci_3
 
             static void TaskManagement(Dictionary<Project, List<Task>> inventory, List<Project>listOfProjects, List<Task>listOfTasks)
             {
+
+                if (listOfProjects.Count == 0)
+                {
+                    Console.WriteLine("Ne postoji još niti jedan projekt");
+                    back();
+                    Console.Clear();
+                    MainMenu(inventory, listOfProjects, listOfTasks);
+                }
                 
                 Console.Write("Unesite ime projekta u kojem se nalazi željeni zadatak: ");
                 var NameOfProject = Console.ReadLine();
@@ -855,10 +910,18 @@ namespace domaci_3
                     if (project.ProjectName == NameOfProject)
                     {
                         comparisonProject = project;
+                        var dictionary = inventory[comparisonProject];
+
+                        if (dictionary.Count == 0)
+                        {
+                            Console.WriteLine("Ne postoji još niti jedan zadatak unutar projekta");
+                            back();
+                            Console.Clear();
+                            MainMenu(inventory, listOfProjects, listOfTasks);
+                        }
                         
                         Console.WriteLine("Unesite ime zadatka: ");
                         var NameOfTask = Console.ReadLine();
-                        var dictionary = inventory[comparisonProject];
                         var check = false;
                         while (!check)
                         {
