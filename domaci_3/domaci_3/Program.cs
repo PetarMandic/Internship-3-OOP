@@ -1149,6 +1149,9 @@ namespace domaci_3
                 if (numberOfTasksStatus == list.Count)
                 {
                     Console.WriteLine("Svi zadaci u prjektu su postavljeni na -> 'završen', status projekta postaje -> 'završen'");
+                    inventory.Remove(comparison);
+                    comparison.ProjectStatus = "završen";
+                    inventory.Add(comparison, list);
                 }
             }
         }
